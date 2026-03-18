@@ -17,10 +17,12 @@ COPY . .
 COPY docker/middleware.ts ./src
 
 ARG BASE_PATH
+ARG ALLOWED_FRAME_URLS=""
 
 ENV BASE_PATH=$BASE_PATH
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV DATABASE_URL="postgresql://user:pass@localhost:5432/dummy"
+ENV ALLOWED_FRAME_URLS=$ALLOWED_FRAME_URLS
 
 RUN npm run build-docker
 
