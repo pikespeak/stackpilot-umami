@@ -43,16 +43,18 @@ export async function GET(request: Request) {
     token = createSecureToken({ userId: id, role }, secret());
   }
 
-  // Return HTML that stores the token in localStorage and redirects.
-  // This runs inside the iframe's origin, so localStorage is scoped correctly.
+  // Umami stores ONLY the token string in localStorage (JSON.stringify wraps it in quotes).
+  // After setting the token, we redirect to the app which will call /api/auth/verify
+  // to populate the user store.
+  const tokenJson = JSON.stringify(token);
+
   const html = `<!DOCTYPE html>
 <html>
 <head><title>Logging in...</title></head>
 <body>
 <script>
   try {
-    const data = ${JSON.stringify(JSON.stringify({ token, user: { id, username: user.username, role, isAdmin: role === ROLES.admin } }))};
-    localStorage.setItem('umami.auth', data);
+    localStorage.setItem('umami.auth', ${JSON.stringify(tokenJson)});
     window.location.href = ${JSON.stringify(redirect)};
   } catch (e) {
     document.body.textContent = 'Auto-login failed: ' + e.message;
